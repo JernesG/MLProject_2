@@ -100,7 +100,7 @@ class DataTransformation:
                 #getting the path where the file needs to be saved
                 file_path = self.data_transformation_config.preprocessor_obj_file_path,
                 
-                obj = preprocessing_obj
+                obj = preprocessing_obj 
             )
             return (
                 train_arr,
