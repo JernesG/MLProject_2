@@ -4,7 +4,7 @@ import numpy as np
 import os
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder,LabelEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from src.exception import CustomException
@@ -15,10 +15,12 @@ from src.utils import save_object
 @dataclass
 class DataTransformationConfig:
     preprocessor_obj_file_path = os.path.join('artifacts',"preprocessor.pkl")
+    #This class is used to mention the path where preprocessor.pkl file need to be saved.
 
 class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
+        #initializing about with DataTransformationConfig to acess the path
 
     def get_data_transformer_object(self):
 
@@ -50,6 +52,8 @@ class DataTransformation:
                 ("num_pipelie",num_pipeline,numerical_columns),
                 ("cat_pipeline",cat_pipeline,catagorical_columns)
             ])
+            #combining the pipelines
+
             return preprocessor
     
         except Exception as e:
@@ -64,29 +68,38 @@ class DataTransformation:
             logging.info("Obtaning preprocessor object")
             
             preprocessing_obj = self.get_data_transformer_object()
+            #creating object with get_data_transformer_object to use the method of that
 
             target_column_name = "math_score"
 
+            #Assigning train x, y values
             input_feature_train_df = train_df.drop(columns=[target_column_name],axis=1)
             target_feature_train_df = train_df[target_column_name]
 
+            #Assigning test x, y values
             input_feature_test_df = test_df.drop(columns=[target_column_name],axis=1)
             target_feature_test_df = test_df[target_column_name]
 
             logging.info("Applying feature engineering on train and test dataset")
 
+            #applying transformation logic to x value for both cat and numerical values
             input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
 
+            #combining train x,y values for future use
             train_arr = np.c_[
                 input_feature_train_arr, np.array(target_feature_train_df)
             ]
+
+            #Combining Test x,y values fo future use
             test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
 
             logging.info(f"Saved preprocessing object.") 
 
             save_object(
+                #getting the path where the file needs to be saved
                 file_path = self.data_transformation_config.preprocessor_obj_file_path,
+                
                 obj = preprocessing_obj
             )
             return (
