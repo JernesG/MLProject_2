@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import pandas as pd
 import dill
+import pickle
 
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import r2_score
@@ -42,5 +43,13 @@ def evaluate_model(x_train, y_train, x_test, y_test, models):
         df_result = df_result.sort_values(by=['Test_accuracy'],ascending=False)
         logging.info("utils process done")
         return df_result
+    except Exception as e:
+        raise CustomException(e, sys)
+    
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return pickle.load(file_obj)
+
     except Exception as e:
         raise CustomException(e, sys)
